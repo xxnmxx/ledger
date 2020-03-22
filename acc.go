@@ -12,9 +12,7 @@ import (
 
 type class string
 
-type column string
-
-var columnName = []column{
+var columnName = []string{
 	0: "acc",
 	1: "sub",
 }
@@ -40,7 +38,7 @@ var AccClass = []class{
 
 // AccMaster contains names and classes of accs.
 type AccMaster struct {
-	columnName column
+	columnName string
 	accName    []string
 	accClass   []class
 }
@@ -132,7 +130,7 @@ func (a *AccMaster) CheckShape() bool {
 }
 
 // ColumnName returns the name of the column.
-func (a *AccMaster) ColumnName() column {
+func (a *AccMaster) ColumnName() string {
 	return a.columnName
 }
 
@@ -145,9 +143,16 @@ func (a *AccMaster) List() []string {
 	return list
 }
 
+// Len returns the length of the items.
+func (a *AccMaster) Len() int {
+	return len(a.accName)
+}
+
 // *****Sub*****
+
+// SubMaster retains column, sub attr.
 type SubMaster struct {
-	columnName column
+	columnName string
 	subName    []string
 	atrbAcc    []string
 }
@@ -230,7 +235,7 @@ func (s *SubMaster) AddSubMaster(a *AccMaster, n string) {
 			fmt.Printf("%v.%v ", i, v)
 		}
 		var idx int
-		fmt.Printf("\nSelect attrAcc: ")
+		fmt.Printf("\nSelect attrAcc [%v]: ", n)
 		fmt.Scan(&idx)
 		fmt.Print("\n")
 		s.atrbAcc = append(s.atrbAcc, a.accName[idx])
@@ -245,8 +250,13 @@ func (s *SubMaster) CheckShape() bool {
 }
 
 // ColumnName returns the name of the column.
-func (s *SubMaster) ColumnName() column {
+func (s *SubMaster) ColumnName() string {
 	return s.columnName
+}
+
+// Len returns the length.
+func (s *SubMaster) Len() int {
+	return len(s.subName)
 }
 
 // List returns the list of the item.
@@ -260,15 +270,87 @@ func (s *SubMaster) List() []string {
 
 // *****Div*****
 
-//type rec struct {
-//date     string
-//no       uint
-//acc      acc
-//sub      sub
-//div      div
-//taxin    bool
-//taxclass taxclass
-//taxrate  taxrate
-//amt      float64
-//note     string
-//}
+// DivMaster retains column, sub attr.
+type DivMaster struct {
+	columnName string
+	divName    []string
+}
+
+// LoadDivMaster loads data from a csv file.
+func LoadDivMaster(n string) *DivMaster {
+	d := DivMaster{
+		columnName: columnName[1],
+		divName:    []string{},
+	}
+	f, err := os.Open(n)
+	if err != nil {
+		log.Fatal(err)
+	}
+	r := csv.NewReader(f)
+	for {
+		rec, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		d.divName = append(d.divName, rec[0])
+	}
+	return &d
+}
+
+// WriteDivMaster writes current SubMaster to csv a file.
+func (d *DivMaster) WriteDivMaster(n string) {
+	f, err := os.Create(n)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//w := bufio.NewReader(f)
+	for _, v := range d.divName {
+		_, err := fmt.Fprintf(f, "%v\n", v)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
+// CreateDivMaster returns SubMaster.
+func CreateDivMaster() *DivMaster {
+	return &DivMaster{
+		columnName: columnName[1],
+		divName:    []string{},
+	}
+}
+
+// AddDivMaster adds data.
+func (d *DivMaster) AddDivMaster(n string) {
+	uniq := true
+	for _, v := range d.divName {
+		if n == v {
+			uniq = false
+		}
+	}
+	if uniq {
+		d.divName = append(d.divName, n)
+	}
+}
+
+// ColumnName returns the name of the column.
+func (d *DivMaster) ColumnName() string {
+	return d.columnName
+}
+
+// Len returns the length.
+func (d *DivMaster) Len() int {
+	return len(d.divName)
+}
+
+// List returns the list of the item.
+func (d *DivMaster) List() []string {
+	list := make([]string, 0)
+	for _, v := range d.divName {
+		list = append(list, v)
+	}
+	return list
+}

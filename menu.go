@@ -12,7 +12,7 @@ type Menu struct {
 }
 
 type Item interface {
-	ColumnName() column
+	ColumnName() string
 	List() []string
 }
 
