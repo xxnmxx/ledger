@@ -11,6 +11,7 @@ type Menu struct {
 	Selected []int
 }
 
+// Item is contents of the menu.
 type Item interface {
 	ColumnName() string
 	List() []string

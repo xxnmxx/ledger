@@ -10,17 +10,10 @@ import (
 	"os"
 )
 
-type class string
-
-var columnName = []string{
-	0: "acc",
-	1: "sub",
-}
-
 // *****Acc*****
 
 // AccClass contains classes of the acc.
-var AccClass = []class{
+var AccClass = []string{
 	0:  "currentAsset",
 	1:  "fixedAsset",
 	2:  "currentLiability",
@@ -40,7 +33,7 @@ var AccClass = []class{
 type AccMaster struct {
 	columnName string
 	accName    []string
-	accClass   []class
+	accClass   []string
 }
 
 // LoadAccMaster loads data from a csv file.
@@ -48,7 +41,7 @@ func LoadAccMaster(n string) *AccMaster {
 	a := AccMaster{
 		columnName: columnName[0],
 		accName:    []string{},
-		accClass:   []class{},
+		accClass:   []string{},
 	}
 	f, err := os.Open(n)
 	if err != nil {
@@ -64,7 +57,7 @@ func LoadAccMaster(n string) *AccMaster {
 			log.Fatal(err)
 		}
 		a.accName = append(a.accName, rec[0])
-		a.accClass = append(a.accClass, class(rec[1]))
+		a.accClass = append(a.accClass, string(rec[1]))
 	}
 	return &a
 }
@@ -104,12 +97,12 @@ func CreateAccMaster() *AccMaster {
 	return &AccMaster{
 		columnName: columnName[0],
 		accName:    []string{},
-		accClass:   []class{},
+		accClass:   []string{},
 	}
 }
 
 // AddAccMaster adds name and accClass as master data.
-func (a *AccMaster) AddAccMaster(n string, c class) {
+func (a *AccMaster) AddAccMaster(n string, c string) {
 	uniq := true
 	for _, v := range a.accName {
 		if n == v {
@@ -279,7 +272,7 @@ type DivMaster struct {
 // LoadDivMaster loads data from a csv file.
 func LoadDivMaster(n string) *DivMaster {
 	d := DivMaster{
-		columnName: columnName[1],
+		columnName: columnName[2],
 		divName:    []string{},
 	}
 	f, err := os.Open(n)
@@ -318,7 +311,7 @@ func (d *DivMaster) WriteDivMaster(n string) {
 // CreateDivMaster returns SubMaster.
 func CreateDivMaster() *DivMaster {
 	return &DivMaster{
-		columnName: columnName[1],
+		columnName: columnName[2],
 		divName:    []string{},
 	}
 }

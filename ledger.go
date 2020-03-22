@@ -6,11 +6,13 @@ import (
 	"time"
 )
 
+// Ledger is the body of the accounting data.
 type Ledger struct {
 	Header    []string
 	Documents []Document
 }
 
+// Document is the accounting document.
 type Document struct {
 	date     string
 	no       int
@@ -19,11 +21,23 @@ type Document struct {
 	div      []string
 	taxin    []bool
 	taxClass []string
-	//taxRate  []taxRate
-	amt  []float64
-	note []string
+	taxRate  []float64
+	amt      []float64
+	note     []string
 }
 
+var columnName = []string{
+	0: "acc",
+	1: "sub",
+	2: "div",
+	3: "taxClass",
+	4: "taxIn",
+	5: "taxRate",
+	6: "amt",
+	7: "note",
+}
+
+// InputDate returns input date.
 func (l *Ledger) InputDate() string {
 	var d string
 	layout := "2006-01-02"
@@ -50,42 +64,14 @@ func (l *Ledger) no() int {
 	return len(l.Documents)
 }
 
-func (l *Ledger) InputAcc(a *AccMaster) string {
-	var idx int
-	isEmpty := false
-	for {
-		if len(a.accName) == 0 {
-			fmt.Println("Empty master.")
-			isEmpty = true
-			break
-		}
-		for i, v := range a.accName {
-			fmt.Printf("%v.%v ", i, v)
-		}
-		fmt.Printf("\nSelect [acc]: ")
-		_, err := fmt.Scan(&idx)
-		if err != nil {
-			fmt.Println("Invalid.")
-			continue
-		}
-		if idx > len(a.accName) {
-			fmt.Println("Select from list above.")
-			continue
-		}
-		break
-	}
-	if !isEmpty {
-		return a.accName[idx]
-	}
-	return ""
-}
-
+// Master is the interface for masterdata.
 type Master interface {
 	ColumnName() string
 	List() []string
 	Len() int
 }
 
+// InputMaster selects data from master.
 func (l *Ledger) InputMaster(m Master) string {
 	var idx int
 	isEmpty := false
